@@ -14,6 +14,9 @@ export default defineConfig({
       autoCodeSplitting: true,
     }),
   ],
+  build: {
+    outDir: './docs',
+  },
   resolve: {
     alias: {
       '~': path.resolve(__dirname, './src'),
