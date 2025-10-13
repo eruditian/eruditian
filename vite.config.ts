@@ -16,6 +16,7 @@ export default defineConfig({
   ],
   build: {
     outDir: './docs',
+    assetsDir: './eruditian/assets',
   },
   resolve: {
     alias: {
