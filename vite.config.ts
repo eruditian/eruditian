@@ -14,10 +14,7 @@ export default defineConfig({
       autoCodeSplitting: true,
     }),
   ],
-  build: {
-    outDir: './docs',
-    assetsDir: './eruditian/assets',
-  },
+  base: '/eruditian/',
   resolve: {
     alias: {
       '~': path.resolve(__dirname, './src'),
