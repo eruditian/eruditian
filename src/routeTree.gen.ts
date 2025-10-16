@@ -9,10 +9,22 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TraceRouteImport } from './routes/trace'
+import { Route as RacingRouteImport } from './routes/racing'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SequenceTypeRouteImport } from './routes/sequence.$type'
 import { Route as MemorySizeRouteImport } from './routes/memory.$size'
 
+const TraceRoute = TraceRouteImport.update({
+  id: '/trace',
+  path: '/trace',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RacingRoute = RacingRouteImport.update({
+  id: '/racing',
+  path: '/racing',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,36 +43,64 @@ const MemorySizeRoute = MemorySizeRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/racing': typeof RacingRoute
+  '/trace': typeof TraceRoute
   '/memory/$size': typeof MemorySizeRoute
   '/sequence/$type': typeof SequenceTypeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/racing': typeof RacingRoute
+  '/trace': typeof TraceRoute
   '/memory/$size': typeof MemorySizeRoute
   '/sequence/$type': typeof SequenceTypeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/racing': typeof RacingRoute
+  '/trace': typeof TraceRoute
   '/memory/$size': typeof MemorySizeRoute
   '/sequence/$type': typeof SequenceTypeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/memory/$size' | '/sequence/$type'
+  fullPaths: '/' | '/racing' | '/trace' | '/memory/$size' | '/sequence/$type'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/memory/$size' | '/sequence/$type'
-  id: '__root__' | '/' | '/memory/$size' | '/sequence/$type'
+  to: '/' | '/racing' | '/trace' | '/memory/$size' | '/sequence/$type'
+  id:
+    | '__root__'
+    | '/'
+    | '/racing'
+    | '/trace'
+    | '/memory/$size'
+    | '/sequence/$type'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  RacingRoute: typeof RacingRoute
+  TraceRoute: typeof TraceRoute
   MemorySizeRoute: typeof MemorySizeRoute
   SequenceTypeRoute: typeof SequenceTypeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/trace': {
+      id: '/trace'
+      path: '/trace'
+      fullPath: '/trace'
+      preLoaderRoute: typeof TraceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/racing': {
+      id: '/racing'
+      path: '/racing'
+      fullPath: '/racing'
+      preLoaderRoute: typeof RacingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,6 +127,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  RacingRoute: RacingRoute,
+  TraceRoute: TraceRoute,
   MemorySizeRoute: MemorySizeRoute,
   SequenceTypeRoute: SequenceTypeRoute,
 }
