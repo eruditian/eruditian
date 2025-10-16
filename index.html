@@ -2,8 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <title>Eruditian</title>
+    <script>
+      document.addEventListener("gesturestart", function (e) {
+        e.preventDefault();
+        document.body.style.zoom = 0.99;
+      });
+
+      document.addEventListener("gesturechange", function (e) {
+        e.preventDefault();
+        document.body.style.zoom = 0.99;
+      });
+      document.addEventListener("gestureend", function (e) {
+        e.preventDefault();
+        document.body.style.zoom = 1;
+      });
+    </script>
   </head>
   <body class="dark" style="height:100vh;">
     <div id="root" style="height:100vh;"></div>
