@@ -14,7 +14,7 @@ export default defineConfig({
       autoCodeSplitting: true,
     }),
   ],
-  base: '/eruditian/',
+  // base: '/eruditian/',
   resolve: {
     alias: {
       '~': path.resolve(__dirname, './src'),

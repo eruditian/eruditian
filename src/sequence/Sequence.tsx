@@ -79,28 +79,25 @@ const Sequence: React.FC<SequenceProps> = ({ type }) => {
             </p>
           )}
           {phase === 'game-over' && (
-            <div
-              className={cn('flex gap-2', sequence.length > 10 && 'text-6xl')}
-            >
+            <div className="flex gap-2">
               {sequence.map((v, i) => (
-                <p key={i + '-' + v} className="w-20">
+                <p
+                  key={i + '-' + v}
+                  className={cn('w-16', sequence.length > 8 && 'w-10 text-6xl')}
+                >
                   {v}
                 </p>
               ))}
             </div>
           )}
 
-          <div
-            className={cn(
-              'flex min-h-14 gap-2',
-              sequence.length > 10 && 'text-6xl',
-            )}
-          >
+          <div className="flex min-h-14 gap-2">
             {answers.map((v, i) => (
               <p
                 key={i + '-' + v}
                 className={cn(
-                  'w-20 text-teal-600',
+                  'text-teal-600',
+                  sequence.length > 8 && 'w-10 text-6xl',
                   phase === 'game-over' && 'last:text-red-700',
                 )}
               >
