@@ -11,7 +11,9 @@ export interface Bounds {
   y: number;
   width: number;
   height: number;
+  /** X (left) component of bottom-right-corner. `x + width`. */
   x2: number;
+  /** Y (top) component of bottom-right-corner. `y + height`. */
   y2: number;
 }
 
