@@ -5,7 +5,7 @@ import useMemoryState from './useMemoryState';
 import { Button } from '~/components/ui/button';
 import { RefreshCcwIcon } from 'lucide-react';
 import usePlayersMeta from '~/hooks/usePlayerMeta';
-import PlayerScore from './PlayerScore';
+import PlayerScore from '../generic/PlayerScore';
 import { useShallow } from 'zustand/shallow';
 
 interface MemoryProps {

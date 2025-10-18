@@ -5,7 +5,7 @@ import { cn } from '~/lib/utils';
 interface PlayerScoreProps {
   player: ActiveEruditioPlayer;
   score: number;
-  current_player: string;
+  current_player?: string;
 }
 
 const PlayerScore: FC<PlayerScoreProps> = ({

@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as CatchRouteImport } from './routes/catch'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SequenceTypeRouteImport } from './routes/sequence.$type'
 import { Route as MemorySizeRouteImport } from './routes/memory.$size'
 
+const CatchRoute = CatchRouteImport.update({
+  id: '/catch',
+  path: '/catch',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,36 +37,47 @@ const MemorySizeRoute = MemorySizeRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/catch': typeof CatchRoute
   '/memory/$size': typeof MemorySizeRoute
   '/sequence/$type': typeof SequenceTypeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/catch': typeof CatchRoute
   '/memory/$size': typeof MemorySizeRoute
   '/sequence/$type': typeof SequenceTypeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/catch': typeof CatchRoute
   '/memory/$size': typeof MemorySizeRoute
   '/sequence/$type': typeof SequenceTypeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/memory/$size' | '/sequence/$type'
+  fullPaths: '/' | '/catch' | '/memory/$size' | '/sequence/$type'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/memory/$size' | '/sequence/$type'
-  id: '__root__' | '/' | '/memory/$size' | '/sequence/$type'
+  to: '/' | '/catch' | '/memory/$size' | '/sequence/$type'
+  id: '__root__' | '/' | '/catch' | '/memory/$size' | '/sequence/$type'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CatchRoute: typeof CatchRoute
   MemorySizeRoute: typeof MemorySizeRoute
   SequenceTypeRoute: typeof SequenceTypeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/catch': {
+      id: '/catch'
+      path: '/catch'
+      fullPath: '/catch'
+      preLoaderRoute: typeof CatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CatchRoute: CatchRoute,
   MemorySizeRoute: MemorySizeRoute,
   SequenceTypeRoute: SequenceTypeRoute,
 }

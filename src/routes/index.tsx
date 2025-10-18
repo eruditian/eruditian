@@ -136,6 +136,17 @@ function Index() {
           123...
         </Link>
       </div>
+      <div className="shadow-center border-accent-foreground/30 flex justify-center gap-4 rounded-lg border-2 p-4 shadow-cyan-700/70">
+        <Link
+          to="/catch"
+          className={cn(
+            'border-primary/70 rounded border p-4',
+            !has_active_players && 'opacity-50',
+          )}
+        >
+          Catch
+        </Link>
+      </div>
     </div>
   );
 }
