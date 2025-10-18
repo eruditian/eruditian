@@ -1,7 +1,7 @@
 import { create as createZustand } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
-export interface Parsel {
+export interface Parcel {
   x: number;
   y: number;
   /** The current offset from the original spawn x-location. */
@@ -13,7 +13,7 @@ export interface Parsel {
   size: number;
   velocity: number;
   image: string;
-  /** Player id who should catch this parsel. If undefined it is dangerou! */
+  /** Player id who should catch this parcel. If undefined it is dangerous! */
   catchable_by?: string;
 }
 
