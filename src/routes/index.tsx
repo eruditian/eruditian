@@ -1,14 +1,14 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { Toggle } from '~/components/ui/toggle';
-import usePlayersMeta, { EruditioPlayer } from '~/hooks/usePlayerMeta';
+import usePlayersMeta, { EruditianPlayer } from '~/hooks/usePlayerMeta';
 import { cn } from '~/lib/utils';
 
 export const Route = createFileRoute('/')({
   component: Index,
 });
 
-const players: EruditioPlayer[] = [
+const players: EruditianPlayer[] = [
   { name: 'Player A', color_preference: 'pink', id: 'player_a' },
   { name: 'Player B', color_preference: 'green', id: 'player_b' },
   { name: 'Player C', color_preference: 'yellow', id: 'player_c' },
@@ -25,7 +25,7 @@ function Index() {
       return;
     }
     setPlayersMeta({
-      players: players.reduce<Record<string, EruditioPlayer>>((acc, p) => {
+      players: players.reduce<Record<string, EruditianPlayer>>((acc, p) => {
         acc[p.id] = { ...p };
         return acc;
       }, {}),

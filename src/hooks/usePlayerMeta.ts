@@ -12,17 +12,17 @@ const player_colors = [
 
 export type PlayerColor = (typeof player_colors)[number];
 
-export interface EruditioPlayer {
+export interface EruditianPlayer {
   name: string;
   id: string;
   color_preference: PlayerColor;
 }
-export interface ActivePlayer extends EruditioPlayer {
+export interface ActivePlayer extends EruditianPlayer {
   color: PlayerColor;
 }
 export interface PlayersMeta {
   version: number;
-  players: Record<string, EruditioPlayer>;
+  players: Record<string, EruditianPlayer>;
   active_players: ActivePlayer[];
 }
 
@@ -45,8 +45,8 @@ const getStoredOrDefault = (): PlayersMeta => {
 };
 
 const createPlayer = (
-  partial: Partial<EruditioPlayer> = {},
-): EruditioPlayer => {
+  partial: Partial<EruditianPlayer> = {},
+): EruditianPlayer => {
   return {
     id: uuid(),
     name: 'Unknown player',
@@ -107,7 +107,7 @@ const usePlayersMeta = () => {
   }, []);
 
   const setPlayer = useCallback(
-    (meta_data: Partial<EruditioPlayer>) => {
+    (meta_data: Partial<EruditianPlayer>) => {
       const copy = { ...players_meta };
 
       const player = meta_data?.id
@@ -123,7 +123,7 @@ const usePlayersMeta = () => {
   );
 
   const getPlayer = useCallback(
-    (player_id: string): EruditioPlayer => {
+    (player_id: string): EruditianPlayer => {
       const player = players_meta.players[player_id];
       if (!player) {
         throw new Error('Player not found. ' + player_id);
@@ -134,7 +134,7 @@ const usePlayersMeta = () => {
   );
 
   const setActivePlayers = useCallback(
-    (players: EruditioPlayer[]) => {
+    (players: EruditianPlayer[]) => {
       const available_colors: PlayerColor[] = [...player_colors];
       const actives = players
         .map<[ActivePlayer, boolean]>((p) => {
