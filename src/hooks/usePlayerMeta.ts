@@ -17,13 +17,13 @@ export interface EruditioPlayer {
   id: string;
   color_preference: PlayerColor;
 }
-export interface ActiveEruditioPlayer extends EruditioPlayer {
+export interface ActivePlayer extends EruditioPlayer {
   color: PlayerColor;
 }
 export interface PlayersMeta {
   version: number;
   players: Record<string, EruditioPlayer>;
-  active_players: ActiveEruditioPlayer[];
+  active_players: ActivePlayer[];
 }
 
 const default_players_meta: PlayersMeta = {
@@ -137,7 +137,7 @@ const usePlayersMeta = () => {
     (players: EruditioPlayer[]) => {
       const available_colors: PlayerColor[] = [...player_colors];
       const actives = players
-        .map<[ActiveEruditioPlayer, boolean]>((p) => {
+        .map<[ActivePlayer, boolean]>((p) => {
           if (!players_meta.players[p.id]) {
             throw new Error('Player not found. ' + p.id);
           }
@@ -155,7 +155,7 @@ const usePlayersMeta = () => {
             color_idx > -1,
           ];
         })
-        .map<ActiveEruditioPlayer>(([p, color_available]) => {
+        .map<ActivePlayer>(([p, color_available]) => {
           if (color_available) {
             return p;
           }

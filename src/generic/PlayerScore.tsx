@@ -1,9 +1,9 @@
 import { FC } from 'react';
-import { ActiveEruditioPlayer } from '~/hooks/usePlayerMeta';
+import { ActivePlayer } from '~/hooks/usePlayerMeta';
 import { cn } from '~/lib/utils';
 
 interface PlayerScoreProps {
-  player: ActiveEruditioPlayer;
+  player: ActivePlayer;
   score: number;
   current_player?: string;
 }
