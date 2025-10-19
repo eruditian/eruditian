@@ -10,6 +10,7 @@
 //   domain: string;
 
 import { country_paths } from './country_paths';
+import { currencies } from './currencies';
 
 const country_data = [
   {
@@ -173,7 +174,7 @@ const country_data = [
     domain: '.az',
   },
   {
-    name: 'Bahamas (the)',
+    name: 'Bahamas',
     official_name: 'the Commonwealth of The Bahamas',
     sovereignty: 'UN member',
     code: 'BS',
@@ -343,18 +344,8 @@ const country_data = [
   //   domain: '.io',
   // },
   {
-    name: 'British Virgin Islands – See Virgin Islands (British).',
-    official_name: '',
-    sovereignty: '',
-    code: '',
-    triple_code: '',
-    numeric_code: "''",
-    code_link: '',
-    domain: '',
-  },
-  {
-    name: 'Brunei Darussalam[i]',
-    official_name: 'Brunei Darussalam[c]',
+    name: 'Brunei',
+    official_name: 'Brunei',
     sovereignty: 'UN member',
     code: 'BN',
     triple_code: 'BRN',
@@ -403,7 +394,7 @@ const country_data = [
     domain: '.bi',
   },
   {
-    name: 'Cabo Verde[j]',
+    name: 'Cabo Verde / Cape Verde',
     official_name: 'the Republic of Cabo Verde',
     sovereignty: 'UN member',
     code: 'CV',
@@ -441,16 +432,6 @@ const country_data = [
     numeric_code: '124',
     code_link: 'ISO 3166-2:CA',
     domain: '.ca',
-  },
-  {
-    name: 'Cape Verde – See Cabo Verde.',
-    official_name: '',
-    sovereignty: '',
-    code: '',
-    triple_code: '',
-    numeric_code: "''",
-    code_link: '',
-    domain: '',
   },
   {
     name: 'Caribbean Netherlands – See Bonaire, Sint Eustatius and Saba.',
@@ -563,7 +544,7 @@ const country_data = [
     domain: '.km',
   },
   {
-    name: 'Congo (the Democratic Republic of the)',
+    name: 'Democratic Republic of the Congo (the)',
     official_name: 'the Democratic Republic of the Congo',
     sovereignty: 'UN member',
     code: 'CD',
@@ -573,7 +554,7 @@ const country_data = [
     domain: '.cd',
   },
   {
-    name: 'Congo (the)[k]',
+    name: 'Congo (the)',
     official_name: 'the Republic of the Congo',
     sovereignty: 'UN member',
     code: 'CG',
@@ -664,16 +645,6 @@ const country_data = [
   },
   {
     name: "Democratic People's Republic of Korea – See Korea, The Democratic People's \nRepublic of.",
-    official_name: '',
-    sovereignty: '',
-    code: '',
-    triple_code: '',
-    numeric_code: "''",
-    code_link: '',
-    domain: '',
-  },
-  {
-    name: 'Democratic Republic of the Congo – See Congo, The Democratic Republic of the.',
     official_name: '',
     sovereignty: '',
     code: '',
@@ -1083,8 +1054,8 @@ const country_data = [
   //   domain: '.hm',
   // },
   {
-    name: 'Holy See (the)[r]',
-    official_name: 'the Holy See[c]',
+    name: 'Vatican City[r]',
+    official_name: 'The Holy See[c]',
     sovereignty: 'UN observer',
     code: 'VA',
     triple_code: 'VAT',
@@ -1303,8 +1274,8 @@ const country_data = [
   //   domain: '.ki',
   // },
   {
-    name: "Korea (the Democratic People's Republic of)[t]",
-    official_name: "the Democratic People's Republic of Korea",
+    name: 'North Korea',
+    official_name: "Democratic People's Republic of Korea",
     sovereignty: 'UN member',
     code: 'KP',
     triple_code: 'PRK',
@@ -1313,8 +1284,8 @@ const country_data = [
     domain: '.kp',
   },
   {
-    name: 'Korea (the Republic of)[u]',
-    official_name: 'the Republic of Korea',
+    name: 'South Korea',
+    official_name: 'Republic of Korea',
     sovereignty: 'UN member',
     code: 'KR',
     triple_code: 'KOR',
@@ -1343,8 +1314,8 @@ const country_data = [
     domain: '.kg',
   },
   {
-    name: "Lao People's Democratic Republic (the)[v]",
-    official_name: "the Lao People's Democratic Republic",
+    name: 'Laos',
+    official_name: "Lao People's Democratic Republic",
     sovereignty: 'UN member',
     code: 'LA',
     triple_code: 'LAO',
@@ -1683,7 +1654,7 @@ const country_data = [
     domain: '.np',
   },
   {
-    name: 'Netherlands (Kingdom of the)',
+    name: 'Netherlands',
     official_name: 'the Kingdom of the Netherlands',
     sovereignty: 'UN member',
     code: 'NL',
@@ -1833,7 +1804,7 @@ const country_data = [
   //   domain: '.pw',
   // },
   {
-    name: 'Palestine, State of',
+    name: 'Palestine',
     official_name: 'the State of Palestine[d]',
     sovereignty: 'UN observer',
     code: 'PS',
@@ -2003,8 +1974,8 @@ const country_data = [
     domain: '.ro',
   },
   {
-    name: 'Russian Federation (the)[aa]',
-    official_name: 'the Russian Federation',
+    name: 'Russia',
+    official_name: 'The Russian Federation',
     sovereignty: 'UN member',
     code: 'RU',
     triple_code: 'RUS',
@@ -2133,7 +2104,7 @@ const country_data = [
     domain: '.sm',
   },
   {
-    name: 'Sao Tome and Principe',
+    name: 'São Tomé and Príncipe',
     official_name: 'the Democratic Republic of São Tomé and Príncipe',
     sovereignty: 'UN member',
     code: 'ST',
@@ -2394,7 +2365,7 @@ const country_data = [
   },
   {
     name: 'Tajikistan',
-    official_name: 'the Republic of Tajikistan',
+    official_name: 'The Republic of Tajikistan',
     sovereignty: 'UN member',
     code: 'TJ',
     triple_code: 'TJK',
@@ -2403,8 +2374,8 @@ const country_data = [
     domain: '.tj',
   },
   {
-    name: 'Tanzania, the United Republic of',
-    official_name: 'the United Republic of Tanzania',
+    name: 'Tanzania',
+    official_name: 'The United Republic of Tanzania',
     sovereignty: 'UN member',
     code: 'TZ',
     triple_code: 'TZA',
@@ -2553,14 +2524,14 @@ const country_data = [
     domain: '.ae',
   },
   {
-    name: 'United Kingdom of Great Britain and Northern Ireland (the)',
-    official_name: 'the United Kingdom of Great Britain and Northern Ireland',
+    name: 'United Kingdom',
+    official_name: 'The United Kingdom of Great Britain and Northern Ireland',
     sovereignty: 'UN member',
     code: 'GB',
     triple_code: 'GBR',
     numeric_code: '826',
     code_link: 'ISO 3166-2:GB',
-    domain: '- .gb\n   - .uk\n   [ah]',
+    domain: '.gb/.uk',
   },
   // {
   //   name: 'United States Minor Outlying Islands (the)[13][ai]',
@@ -2574,8 +2545,8 @@ const country_data = [
   //   domain: '[aj]',
   // },
   {
-    name: 'United States of America (the)',
-    official_name: 'the United States of America',
+    name: 'United States',
+    official_name: 'The United States of America',
     sovereignty: 'UN member',
     code: 'US',
     triple_code: 'USA',
@@ -2614,16 +2585,6 @@ const country_data = [
     domain: '.vu',
   },
   {
-    name: 'Vatican City – See Holy See, The.',
-    official_name: '',
-    sovereignty: '',
-    code: '',
-    triple_code: '',
-    numeric_code: "''",
-    code_link: '',
-    domain: '',
-  },
-  {
     name: 'Venezuela (Bolivarian Republic of)',
     official_name: 'the Bolivarian Republic of Venezuela',
     sovereignty: 'UN member',
@@ -2634,8 +2595,8 @@ const country_data = [
     domain: '.ve',
   },
   {
-    name: 'Viet Nam[ak]',
-    official_name: 'the Socialist Republic of Viet Nam',
+    name: 'Vietnam',
+    official_name: 'The Socialist Republic of Viet Nam',
     sovereignty: 'UN member',
     code: 'VN',
     triple_code: 'VNM',
@@ -2644,8 +2605,8 @@ const country_data = [
     domain: '.vn',
   },
   {
-    name: 'Virgin Islands (British)[al]',
-    official_name: 'the Virgin Islands[d]',
+    name: 'British Virgin Islands',
+    official_name: 'Virgin Islands',
     sovereignty: 'United Kingdom',
     code: 'VG',
     triple_code: 'VGB',
@@ -2654,8 +2615,8 @@ const country_data = [
     domain: '.vg',
   },
   {
-    name: 'Virgin Islands (U.S.)[am]',
-    official_name: 'the Virgin Islands of the United States',
+    name: 'U.S. Virgin Islands',
+    official_name: 'Virgin Islands of the United States',
     sovereignty: 'United States',
     code: 'VI',
     triple_code: 'VIR',
@@ -2719,10 +2680,22 @@ const nameRegex = /\(.+\)|\[.+\]/g;
 
 type InferredCountry = (typeof country_data)[number];
 
+export interface Currency {
+  /** Name of currency. */
+  currency: string;
+  /** Symbol or abbreviation. */
+  symbol: string;
+  /** ISO three-letter code. */
+  code: string;
+  /** Possible name of fractional unit. */
+  fractional_unit?: string;
+}
+
 export type CountryCode = Exclude<(typeof country_data)[number]['code'], ''>;
 export type Country = Omit<Record<keyof InferredCountry, string>, 'code'> & {
   code: CountryCode;
   path: string;
+  currencies: Currency[];
 };
 
 export const country_list: Country[] = country_data
@@ -2736,13 +2709,26 @@ export const country_list: Country[] = country_data
     if (c.code === '') {
       throw new Error('Missing country code.');
     }
+    const name = (c.name as string).replaceAll(nameRegex, '').trim();
+    const country_currencies = currencies
+      .filter(({ state }) => state === name)
+      .map((currency) => ({
+        code: currency.iso_code,
+        currency: currency.currency,
+        symbol: currency.symbol,
+        fractional_unit: currency.fractional_unit || undefined,
+      }));
+    if (country_currencies.length === 0) {
+      throw new Error('Missing currency for country: ' + name);
+    }
     const country: Country = {
       ...(c as Country),
-      name: (c.name as string).replaceAll(nameRegex, '').trim(),
+      name,
       official_name: (c.official_name as string)
         .replaceAll(nameRegex, '')
         .trim(),
       path: country_paths[c.code],
+      currencies: country_currencies,
     };
     return country;
   });
