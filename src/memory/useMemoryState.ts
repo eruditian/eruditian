@@ -56,7 +56,7 @@ import tree_house from '~/assets/memory-images/tree_house.jpg';
 import unicorn_pink from '~/assets/memory-images/unicorn_pink.jpg';
 import unicorn_white from '~/assets/memory-images/unicorn_white.jpg';
 import waterfall from '~/assets/memory-images/waterfall.jpg';
-import { ActiveEruditioPlayer } from '~/hooks/usePlayerMeta';
+import { ActivePlayer } from '~/hooks/usePlayerMeta';
 
 const images = [
   airplane,
@@ -123,7 +123,7 @@ export interface MemoryCell {
   state: MemoryCellState;
   index: number;
   pending?: PendingChange<MemoryCellState>;
-  player?: ActiveEruditioPlayer;
+  player?: ActivePlayer;
 }
 
 type PendingChange<T> = {
@@ -180,12 +180,8 @@ interface MemoryState {
   >;
   match_count: number;
   current_player: number;
-  players: ActiveEruditioPlayer[];
-  init: (
-    count: number,
-    players: ActiveEruditioPlayer[],
-    match_count?: number,
-  ) => void;
+  players: ActivePlayer[];
+  init: (count: number, players: ActivePlayer[], match_count?: number) => void;
   backgroundClick: () => void;
   cellClick: (cellId: string) => void;
   tick: (t?: number) => void;
