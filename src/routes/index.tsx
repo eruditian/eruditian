@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
+import { PianoIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { Toggle } from '~/components/ui/toggle';
 import usePlayersMeta, { EruditianPlayer } from '~/hooks/usePlayerMeta';
@@ -125,6 +126,15 @@ function Index() {
         </div>
       </div>
       <div className="shadow-center border-accent-foreground/30 flex justify-center gap-4 rounded-lg border-2 p-4 shadow-cyan-700/70">
+        <Link
+          to="/piano"
+          className={cn(
+            'border-primary/70 flex gap-1 rounded border p-4',
+            !has_active_players && 'opacity-50',
+          )}
+        >
+          <PianoIcon /> Piano
+        </Link>
         <Link
           to="/sequence/$type"
           params={{ type: 'numbers' }}
