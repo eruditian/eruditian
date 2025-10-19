@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useEffect } from 'react';
-import { country_list } from '~/assets/geography/countries';
 import { Toggle } from '~/components/ui/toggle';
 import usePlayersMeta, { EruditianPlayer } from '~/hooks/usePlayerMeta';
 import { cn } from '~/lib/utils';
@@ -34,8 +33,6 @@ function Index() {
       version: 3,
     });
   }, [players_meta.players, setPlayersMeta]);
-
-  console.log('country_list', country_list);
 
   return (
     <div className="flex flex-col gap-8 p-12">
