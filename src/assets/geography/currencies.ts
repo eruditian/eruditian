@@ -1,4 +1,4 @@
-export const currencies = [
+const currencies = [
   {
     state: 'Afghanistan',
     currency: 'Afghan afghani',
@@ -1750,3 +1750,5 @@ export const currencies = [
     fractional_unit: '',
   },
 ] as const;
+
+export default currencies;
