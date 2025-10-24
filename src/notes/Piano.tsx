@@ -8,6 +8,8 @@ import usePlayersMeta from '~/hooks/usePlayerMeta';
 import { useShallow } from 'zustand/shallow';
 import Sheet from './sheet/Sheet';
 
+//https://excalidraw.com/#json=CXdIzb0f1mF42zfvgGqng,VlrBLqj9hMZJ8VHjmQxJwQ
+
 const Piano: React.FC = () => {
   const { players_meta } = usePlayersMeta();
   const init = usePianoNotesState(({ init }) => init);
@@ -81,8 +83,8 @@ const Piano: React.FC = () => {
         <Sheet
           notes={[
             { name: 'G', octave: 4 },
-            { name: 'A', octave: 5 },
-            { name: 'B', octave: 5 },
+            { name: 'A', octave: 5, sharp: true },
+            // { name: 'B', octave: 5 },
             { name: 'C', octave: 5 },
           ]}
         />
