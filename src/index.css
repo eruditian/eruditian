@@ -2,6 +2,36 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@theme {
+  --animate-pattern-show: pattern-show 3000ms ease-in-out both;
+  @keyframes pattern-show {
+    0% {
+    }
+    25% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 1;
+      scale: 1.1;
+    }
+    100% {
+      opacity: 1;
+      scale: 1.1;
+    }
+  }
+  --animate-pattern-hide: pattern-hide 500ms ease-in-out both;
+  @keyframes pattern-hide {
+    0% {
+      opacity: 1;
+      scale: 1.1;
+    }
+    100% {
+      opacity: 0.2;
+      scale: 1;
+    }
+  }
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

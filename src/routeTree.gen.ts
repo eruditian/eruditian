@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PatternRouteImport } from './routes/pattern'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SequenceTypeRouteImport } from './routes/sequence.$type'
 import { Route as MemorySizeRouteImport } from './routes/memory.$size'
 
+const PatternRoute = PatternRouteImport.update({
+  id: '/pattern',
+  path: '/pattern',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,36 +37,47 @@ const MemorySizeRoute = MemorySizeRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/pattern': typeof PatternRoute
   '/memory/$size': typeof MemorySizeRoute
   '/sequence/$type': typeof SequenceTypeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/pattern': typeof PatternRoute
   '/memory/$size': typeof MemorySizeRoute
   '/sequence/$type': typeof SequenceTypeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/pattern': typeof PatternRoute
   '/memory/$size': typeof MemorySizeRoute
   '/sequence/$type': typeof SequenceTypeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/memory/$size' | '/sequence/$type'
+  fullPaths: '/' | '/pattern' | '/memory/$size' | '/sequence/$type'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/memory/$size' | '/sequence/$type'
-  id: '__root__' | '/' | '/memory/$size' | '/sequence/$type'
+  to: '/' | '/pattern' | '/memory/$size' | '/sequence/$type'
+  id: '__root__' | '/' | '/pattern' | '/memory/$size' | '/sequence/$type'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PatternRoute: typeof PatternRoute
   MemorySizeRoute: typeof MemorySizeRoute
   SequenceTypeRoute: typeof SequenceTypeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/pattern': {
+      id: '/pattern'
+      path: '/pattern'
+      fullPath: '/pattern'
+      preLoaderRoute: typeof PatternRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PatternRoute: PatternRoute,
   MemorySizeRoute: MemorySizeRoute,
   SequenceTypeRoute: SequenceTypeRoute,
 }
