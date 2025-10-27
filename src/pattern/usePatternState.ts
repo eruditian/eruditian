@@ -1,5 +1,6 @@
 import { create as createZustand } from 'zustand';
 import { devtools } from 'zustand/middleware';
+import { getRandomInt } from '~/emath';
 import { ActivePlayer } from '~/hooks/usePlayerMeta';
 
 interface PatternState {
@@ -11,7 +12,6 @@ interface PatternState {
     | 'player-end'
     | 'awaiting-input'
     | 'revealing'
-    | 'awaiting-init'
     | 'game-over';
   revealed: number[];
   pattern: number[];
@@ -27,6 +27,30 @@ interface PatternState {
   nextRound: () => void;
 }
 
+const getRandomUniqueValuesInRange = (
+  min: number,
+  max: number,
+  count: number,
+): number[] => {
+  if (count > max - min) {
+    throw new Error(
+      'Requested more unique values than available in given range.',
+    );
+  }
+  const available = Array(max - min)
+    .fill(null)
+    .map((_, i) => min + i);
+  const uniques = Array(count)
+    .fill(null)
+    .reduce((acc) => {
+      const idx = getRandomInt(0, available.length);
+      acc.push(available[idx]);
+      available.splice(idx, 1);
+      return acc;
+    }, [] as number[]);
+  return uniques;
+};
+
 const usePatternState = createZustand<PatternState>()(
   devtools(
     (set, get) =>
@@ -39,29 +63,42 @@ const usePatternState = createZustand<PatternState>()(
         revealed: [],
         pattern: [],
         picked: [],
-        phase: 'awaiting-init',
+        phase: 'game-over',
         init: (count, players) => {
-          set({
-            zone_count: count,
-            difficulty: 0,
-            wave: 0,
-            players,
-            remaining_players: players,
-            pattern: [],
-            picked: [],
-            revealed: [],
-          });
+          set(
+            {
+              zone_count: count,
+              difficulty: 0,
+              wave: 0,
+              players,
+              remaining_players: players,
+              pattern: [],
+              picked: [],
+              revealed: [],
+            },
+            undefined,
+            'init',
+          );
         },
         onRevealEnd: (zone_index) => {
-          const revealed = get().revealed;
+          const { revealed, phase } = get();
+          if (phase !== 'revealing') {
+            return;
+          }
+
           const idx = revealed.findIndex((v) => v === zone_index);
           if (idx === -1) {
             return;
           }
 
-          set({
-            revealed: revealed.toSpliced(idx, 1),
-          });
+          set(
+            {
+              revealed: revealed.toSpliced(idx, 1),
+              phase: revealed.length === 0 ? 'awaiting-input' : 'revealing',
+            },
+            undefined,
+            'onRevealEnd',
+          );
         },
         onZoneClick: (zone_index) => {
           const {
@@ -107,7 +144,12 @@ const usePatternState = createZustand<PatternState>()(
           );
         },
         nextRound: () => {
-          const { remaining_players, current_player_id, difficulty } = get();
+          const {
+            remaining_players,
+            current_player_id,
+            difficulty,
+            zone_count,
+          } = get();
           const current_player_idx = remaining_players.findIndex(
             ({ id }) => id === current_player_id,
           );
@@ -116,9 +158,28 @@ const usePatternState = createZustand<PatternState>()(
             remaining_players[loop ? 0 : current_player_idx + 1].id;
           const next_difficulty = loop ? difficulty + 1 : difficulty;
 
-          set({
-            current_player_id: next_player_id,
-          });
+          const active_zone_count = Math.min(
+            next_difficulty * 2,
+            (zone_count * 0.75) | 0, //Bitwise |0 will convert to signed int, discarding fractions.
+          );
+
+          const pattern = getRandomUniqueValuesInRange(
+            0,
+            zone_count,
+            active_zone_count,
+          );
+
+          set(
+            {
+              current_player_id: next_player_id,
+              pattern,
+              revealed: pattern,
+              difficulty: next_difficulty,
+              phase: 'revealing',
+            },
+            undefined,
+            'nextRound',
+          );
         },
       }) as PatternState,
     {

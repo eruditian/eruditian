@@ -33,3 +33,7 @@ export const indexTo2DRowColumn = (
 ): [number, number] => {
   return [index / column_count, index % column_count];
 };
+
+/** Generate random value in range [min,max). */
+export const getRandomInt = (min: number, max: number) =>
+  Math.random() * (max - min) + min;
