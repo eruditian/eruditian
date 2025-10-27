@@ -56,7 +56,7 @@ const usePatternState = createZustand<PatternState>()(
     (set, get) =>
       ({
         zone_count: 0,
-        difficulty: 0,
+        difficulty: 1,
         wave: 0,
         players: [],
         remaining_players: [],
@@ -68,7 +68,7 @@ const usePatternState = createZustand<PatternState>()(
           set(
             {
               zone_count: count,
-              difficulty: 0,
+              difficulty: 1,
               wave: 0,
               players,
               remaining_players: players,
@@ -79,6 +79,7 @@ const usePatternState = createZustand<PatternState>()(
             undefined,
             'init',
           );
+          get().nextRound();
         },
         onRevealEnd: (zone_index) => {
           const { revealed, phase } = get();
@@ -90,11 +91,12 @@ const usePatternState = createZustand<PatternState>()(
           if (idx === -1) {
             return;
           }
-
+          const revealed_next = revealed.toSpliced(idx, 1);
           set(
             {
-              revealed: revealed.toSpliced(idx, 1),
-              phase: revealed.length === 0 ? 'awaiting-input' : 'revealing',
+              revealed: revealed_next,
+              phase:
+                revealed_next.length === 0 ? 'awaiting-input' : 'revealing',
             },
             undefined,
             'onRevealEnd',

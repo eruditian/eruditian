@@ -36,4 +36,4 @@ export const indexTo2DRowColumn = (
 
 /** Generate random value in range [min,max). */
 export const getRandomInt = (min: number, max: number) =>
-  Math.random() * (max - min) + min;
+  Math.floor(Math.random() * (max - min)) + min;

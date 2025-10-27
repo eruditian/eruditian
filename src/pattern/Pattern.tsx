@@ -5,15 +5,23 @@ import usePlayersMeta from '~/hooks/usePlayerMeta';
 import { cn } from '~/lib/utils';
 import PlayerScore from '~/memory/PlayerScore';
 import Zone from './Zone';
+import usePatternState from './usePatternState';
 
 const rows = Array(4).fill(null);
 const cols = Array(3).fill(null);
 
 const Pattern: React.FC = () => {
   const { players_meta } = usePlayersMeta();
+  const phase = usePatternState(({ phase }) => phase);
+  const revealed = usePatternState(({ revealed }) => revealed);
+  const picked = usePatternState(({ picked }) => picked);
+  const players = usePatternState(({ players }) => players);
 
+  const onRevealEnd = usePatternState(({ onRevealEnd }) => onRevealEnd);
+  const onZoneClick = usePatternState(({ onZoneClick }) => onZoneClick);
+  const init = usePatternState(({ init }) => init);
+  console.log('revealed', phase, revealed);
   const current_player = players_meta.active_players[0];
-  const completed = false;
   const zones = 10;
   return (
     <div
@@ -54,18 +62,21 @@ const Pattern: React.FC = () => {
                 count={zones}
                 column={col}
                 row={row}
-                onClick={() => {}}
-                onAnimationEnd={(index) => {
-                  console.log('tend index', index);
-                }}
-                highlighted={[1, 4, 6, 7]}
+                onClick={onZoneClick}
+                onAnimationEnd={onRevealEnd}
+                highlighted={revealed}
               />
             ))}
           </div>
         ))}
       </div>
-      {completed && (
-        <div className="absolute top-1/2 left-1/2 w-0" onClick={() => {}}>
+      {phase === 'game-over' && (
+        <div
+          className="absolute top-1/2 left-1/2 w-0"
+          onClick={() => {
+            init(zones, players_meta.active_players);
+          }}
+        >
           <div className="bg-background/80 border-accent-foreground/70 relative flex w-80 -translate-1/2 flex-col items-center gap-2 rounded-md border p-4">
             Play again
             <Button variant="secondary" size="icon">
