@@ -138,7 +138,7 @@ const usePatternState = createZustand<PatternState>()(
           const finished = updated_picked.length === pattern.length;
           set(
             {
-              picked: updated_picked,
+              picked: finished ? [] : updated_picked,
               phase: finished ? 'awaiting-next' : phase,
             },
             undefined,
@@ -175,6 +175,7 @@ const usePatternState = createZustand<PatternState>()(
             {
               current_player_id: next_player_id,
               pattern,
+              picked: [],
               revealed: pattern,
               difficulty: next_difficulty,
               phase: 'revealing',

@@ -3,7 +3,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --animate-pattern-show: pattern-show 3000ms ease-in-out both;
+  --animate-pattern-show: pattern-show 1500ms ease-in-out both;
   @keyframes pattern-show {
     0% {
     }

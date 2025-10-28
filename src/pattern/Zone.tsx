@@ -3,7 +3,8 @@ import { cn } from '~/lib/utils';
 
 interface ZoneProps {
   count: number;
-  highlighted: number[];
+  revealed: number[];
+  picked: number[];
   column: number;
   row: number;
   onClick: (index: number) => void;
@@ -11,7 +12,7 @@ interface ZoneProps {
 }
 
 const zones_per_column_by_zone_count: Record<number, number[]> = {
-  3: [1, 1, 1],
+  3: [2, 0, 1, 0],
   4: [2, 0, 2],
   5: [2, 1, 2],
   6: [3, 0, 3],
@@ -21,6 +22,9 @@ const zones_per_column_by_zone_count: Record<number, number[]> = {
   10: [4, 2, 4],
   11: [4, 3, 4],
   12: [4, 4, 4],
+  13: [4, 5, 4],
+  14: [5, 4, 5],
+  15: [5, 5, 5],
 };
 
 const getZoneIndex = (
@@ -46,7 +50,8 @@ const Zone: React.FC<ZoneProps> = ({
   count,
   column,
   row,
-  highlighted,
+  revealed,
+  picked,
   onClick,
   onAnimationEnd,
 }) => {
@@ -55,9 +60,10 @@ const Zone: React.FC<ZoneProps> = ({
     [count, column, row],
   );
   const highlight_index = useMemo(
-    () => highlighted.findIndex((hz) => hz === index),
-    [index, highlighted],
+    () => revealed.findIndex((hz) => hz === index),
+    [index, revealed],
   );
+  const isPicked = useMemo(() => picked.includes(index), [index, picked]);
 
   if (index < 0) {
     return null;
@@ -66,12 +72,13 @@ const Zone: React.FC<ZoneProps> = ({
   return (
     <div
       style={{
-        animationDelay: `${highlight_index > -1 ? 100 * highlight_index : 0}ms`,
+        animationDelay: `${highlight_index > -1 ? 300 * highlight_index : 0}ms`,
       }}
       className={cn(
-        'shadow-center shadow-accent-foreground border-accent-foreground/80 bg-secondary/90 aspect-square w-1/2 rounded-xl border-2',
+        'shadow-center shadow-accent-foreground border-accent-foreground/80 bg-secondary/90 aspect-square w-full rounded-xl border-2 transition-colors duration-75',
         highlight_index > -1 && 'animate-pattern-show',
         highlight_index === -1 && 'animate-pattern-hide',
+        isPicked && 'bg-green-500 duration-300',
       )}
       onAnimationEnd={() => onAnimationEnd(index)}
       onClick={() => onClick(index)}
