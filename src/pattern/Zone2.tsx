@@ -1,9 +1,9 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { cn } from '~/lib/utils';
 import { ZoneState } from './usePatternState2';
 
 interface ZoneProps extends ZoneState {
-  enabled: boolean;
+  interactive: boolean;
 }
 
 const Zone: React.FC<ZoneProps> = ({
@@ -12,6 +12,7 @@ const Zone: React.FC<ZoneProps> = ({
   index,
   onClick,
   onAnimationEnd,
+  interactive,
 }) => {
   if (index < 0) {
     return null;
@@ -23,10 +24,10 @@ const Zone: React.FC<ZoneProps> = ({
         animationDelay: `${revealed ? 300 * index : 0}ms`,
       }}
       className={cn(
-        'shadow-center shadow-accent-foreground border-accent-foreground/80 bg-secondary/90 aspect-square w-full rounded-xl border-2 transition-colors duration-75',
+        'shadow-center shadow-accent-foreground border-accent-foreground/80 bg-secondary/90 w-full grow rounded-xl border-2 opacity-20 transition duration-75',
         revealed && 'animate-pattern-show',
-        !revealed && 'animate-pattern-hide',
-        picked && 'bg-green-500 duration-300',
+        picked && 'bg-green-500 opacity-100 duration-300',
+        interactive && 'hover:opacity-100',
       )}
       onAnimationEnd={onAnimationEnd}
       onClick={onClick}

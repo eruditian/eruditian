@@ -3,31 +3,19 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --animate-pattern-show: pattern-show 1500ms ease-in-out both;
+  --animate-pattern-show: pattern-show 1500ms ease-in-out;
   @keyframes pattern-show {
     0% {
     }
-    25% {
+    10% {
       opacity: 1;
     }
     50% {
       opacity: 1;
-      scale: 1.1;
+      transform: translateY(-20px) scaleX(1.1);
     }
     100% {
-      opacity: 1;
-      scale: 1.1;
-    }
-  }
-  --animate-pattern-hide: pattern-hide 500ms ease-in-out both;
-  @keyframes pattern-hide {
-    0% {
-      opacity: 1;
-      scale: 1.1;
-    }
-    100% {
-      opacity: 0.2;
-      scale: 1;
+      transform: translateY(0) scaleX(1);
     }
   }
 }

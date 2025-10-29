@@ -1,6 +1,6 @@
 import { create as createZustand } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { getRandomInt } from '~/emath';
+import { getRandomInt, shuffleArray } from '~/emath';
 
 export interface ZoneState {
   revealed: boolean;
@@ -12,10 +12,15 @@ export interface ZoneState {
 }
 interface PatternState {
   difficulty: number;
-  phase: 'awaiting-next' | 'awaiting-input' | 'revealing' | 'game-over';
+  phase:
+    | 'awaiting-next'
+    | 'awaiting-input'
+    | 'revealing'
+    | 'game-over'
+    | 'awaiting-init';
   zones: ZoneState[];
-  pattern: [number[], number[], number[], number[]];
-  init: (difficulty: number) => void;
+  pattern: [number[], number[], number[], number[], number[]];
+  init: (difficulty?: number) => void;
   onRevealEnd: (zone_index: number) => void;
   onZoneClick: (zone_index: number) => void;
   nextRound: () => void;
@@ -50,15 +55,15 @@ const usePatternState = createZustand<PatternState>()(
     (set, get) =>
       ({
         difficulty: 0,
-        pattern: [[], [], [], []],
-        phase: 'game-over',
+        pattern: [[], [], [], [], []],
+        phase: 'awaiting-init',
         zones: [],
-        init: (difficulty = 2) => {
+        init: (difficulty = 1) => {
           set(
             {
               //Difficulty dropped by one because nextRound() will increment it.
               difficulty: Math.max(0, difficulty - 1),
-              pattern: [[], [], [], []],
+              pattern: [[], [], [], [], []],
             },
             undefined,
             'init',
@@ -74,7 +79,7 @@ const usePatternState = createZustand<PatternState>()(
           const z: ZoneState = { ...zones[zone_index], revealed: false };
           const next_zones = zones.toSpliced(zone_index, 1, z);
           const remaining_revealed = next_zones.filter(
-            ({ revealed }) => !revealed,
+            ({ revealed }) => revealed,
           );
           set(
             {
@@ -104,13 +109,14 @@ const usePatternState = createZustand<PatternState>()(
             );
             return;
           }
-          const finished = zones.some(
+          const next_zones = zones.toSpliced(zone_index, 1, z);
+          const has_unpicked_zones = next_zones.some(
             ({ active, picked }) => active && !picked,
           );
           set(
             {
-              zones: zones.toSpliced(zone_index, 1, z),
-              phase: finished ? 'awaiting-next' : phase,
+              zones: next_zones,
+              phase: !has_unpicked_zones ? 'awaiting-next' : phase,
             },
             undefined,
             'onZoneClick',
@@ -119,7 +125,7 @@ const usePatternState = createZustand<PatternState>()(
         nextRound: () => {
           const { difficulty, onRevealEnd, onZoneClick } = get();
 
-          const next_difficulty = difficulty;
+          const next_difficulty = difficulty + 1;
 
           const active_zone_count = next_difficulty * 2;
           const dead_zone_count =
@@ -149,7 +155,7 @@ const usePatternState = createZustand<PatternState>()(
               };
             });
           const indices = zones.map(({ index }) => index);
-          const columns = 4;
+          const columns = 5;
           const pattern = Array(columns)
             .fill(null)
             .reduce<PatternState['pattern']>(
@@ -158,12 +164,13 @@ const usePatternState = createZustand<PatternState>()(
                   acc[column_index] = indices;
                   return acc;
                 }
-                const idx = getRandomInt(0, indices.length);
+                const idx = getRandomInt(1, indices.length);
                 acc[column_index] = indices.splice(0, idx);
                 return acc;
               },
-              [[], [], [], []],
+              [[], [], [], [], []],
             );
+          shuffleArray(pattern);
 
           set(
             {

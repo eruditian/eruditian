@@ -4,31 +4,23 @@ import { Button } from '~/components/ui/button';
 import usePlayersMeta from '~/hooks/usePlayerMeta';
 import { cn } from '~/lib/utils';
 import PlayerScore from '~/memory/PlayerScore';
-import Zone from './Zone';
-import usePatternState from './usePatternState';
-
-const zones = 3;
-const rows = Array(5).fill(null);
-const cols = Array(4).fill(null);
+import Zone from './Zone2';
+import usePatternState2 from './usePatternState2';
 
 const Pattern: React.FC = () => {
   const { players_meta } = usePlayersMeta();
-  const phase = usePatternState(({ phase }) => phase);
-  const revealed = usePatternState(({ revealed }) => revealed);
-  const picked = usePatternState(({ picked }) => picked);
-  const players = usePatternState(({ players }) => players);
+  const phase = usePatternState2(({ phase }) => phase);
+  const pattern = usePatternState2(({ pattern }) => pattern);
+  const zones = usePatternState2(({ zones }) => zones);
+  const init = usePatternState2(({ init }) => init);
+  const nextRound = usePatternState2(({ nextRound }) => nextRound);
 
-  const onRevealEnd = usePatternState(({ onRevealEnd }) => onRevealEnd);
-  const onZoneClick = usePatternState(({ onZoneClick }) => onZoneClick);
-  const init = usePatternState(({ init }) => init);
-  const nextRound = usePatternState(({ nextRound }) => nextRound);
-
-  const current_player = players_meta.active_players[0];
-
+  const current_player =
+    phase === 'awaiting-input' ? players_meta.active_players[0] : undefined;
   return (
     <div
       className={cn(
-        'inset-shadow-center-lg relative flex h-full flex-col items-center gap-2 pb-8 inset-shadow-green-500/100 transition-shadow duration-300',
+        'inset-shadow-center-lg inset-shadow-accent/0 relative flex h-full flex-col items-center gap-2 pb-8 transition-shadow duration-300',
         current_player?.color === 'green' && 'inset-shadow-green-500/80',
         current_player?.color === 'blue' && 'inset-shadow-blue-600/90',
         current_player?.color === 'pink' && 'inset-shadow-pink-400/90',
@@ -52,22 +44,17 @@ const Pattern: React.FC = () => {
           ))}
         </div>
       </div>
-      <div className="flex w-[min(100vh/1.5,100%)] grow items-center gap-8 px-8">
-        {cols.map((_, col) => (
+      <div className="flex w-[min(100vh/1.5,100%)] grow items-center gap-8 overflow-hidden p-8">
+        {pattern.map((zone_indices, col_idx) => (
           <div
-            key={'col_' + col}
+            key={'col_' + col_idx}
             className="flex h-full grow flex-col items-center justify-around gap-8"
           >
-            {rows.map((_, row) => (
+            {zone_indices.map((zone_idx) => (
               <Zone
-                key={'zone_' + col + '_' + row}
-                count={zones}
-                column={col}
-                row={row}
-                onClick={onZoneClick}
-                onAnimationEnd={onRevealEnd}
-                revealed={revealed}
-                picked={picked}
+                key={'zone_' + zone_idx}
+                {...zones[zone_idx]}
+                interactive={phase === 'awaiting-input'}
               />
             ))}
           </div>
@@ -93,7 +80,7 @@ const Pattern: React.FC = () => {
         <div
           className="absolute top-1/2 left-1/2 w-0"
           onClick={() => {
-            init(zones, players_meta.active_players);
+            init();
           }}
         >
           <div className="bg-background/80 border-accent-foreground/70 relative flex w-80 -translate-1/2 flex-col items-center gap-2 rounded-md border p-4">
