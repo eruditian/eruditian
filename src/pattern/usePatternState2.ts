@@ -1,29 +1,64 @@
-import { create as createZustand } from 'zustand';
+import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
+import z from 'zod/v4';
 import { getRandomInt, shuffleArray } from '~/emath';
 
-export interface ZoneState {
-  revealed: boolean;
-  picked: boolean;
-  index: number;
+const zoneStateSchema = z.object({
+  revealed: z.boolean(),
+  index: z.number().min(0).max(120),
+  picked: z.boolean(),
+  active: z.boolean(),
+});
+
+type ZoneData = z.infer<typeof zoneStateSchema>;
+
+export interface ZoneState extends ZoneData {
+  onRevealEnd: () => void;
   onClick: () => void;
-  onAnimationEnd: () => void;
-  active: boolean;
 }
-interface PatternState {
-  difficulty: number;
-  phase:
-    | 'awaiting-next'
-    | 'awaiting-input'
-    | 'revealing'
-    | 'game-over'
-    | 'awaiting-init';
+
+const patternStateDataSchema = z.object({
+  /** The current phase of gameplay.
+   *
+   * revealing: This is true after a new round has been started and while
+   * there are `active` zone indexes which has not been passed to `onRevealEnd(index)`.
+   *
+   * awaiting-init: True until any game has been started by calling `init()`.
+   *
+   * awaiting-input: True during gameplay, when game is awaiting player input.
+   *
+   * awaiting-next: True when a round has been completed and waiting for player to
+   * call `nextRound()`.
+   */
+  phase: z.literal([
+    'game-over',
+    'awaiting-init',
+    'revealing',
+    'awaiting-input',
+    'awaiting-next',
+  ]),
+  difficulty: z.number(),
+  /** The state data for each zone. */
+  zones: z.array(zoneStateSchema),
+  /** A list of zone indices to show, per column. */
+  pattern: z.array(z.array(z.number())),
+});
+
+export type PatternStateData = z.infer<typeof patternStateDataSchema>;
+
+interface PatternState extends Omit<PatternStateData, 'zones'> {
   zones: ZoneState[];
-  pattern: [number[], number[], number[], number[], number[]];
   init: (difficulty?: number) => void;
-  onRevealEnd: (zone_index: number) => void;
-  onZoneClick: (zone_index: number) => void;
+  onRevealEnd: (zoneIdx: number) => void;
   nextRound: () => void;
+  onZoneClick: (zoneIdx: number) => void;
+  /** Returns an error if parsing of the state fails. */
+  onResume: (state: PatternStateData) => undefined | Error;
+  /** Stringify current state. This could be used to save game-state and resume it later.
+   *
+   * The string will be pretty-printed for sake of readability in this demo project.
+   */
+  stringify: () => string;
 }
 
 const getRandomUniqueValuesInRange = (
@@ -50,143 +85,152 @@ const getRandomUniqueValuesInRange = (
   return uniques;
 };
 
-const usePatternState = createZustand<PatternState>()(
+const usePatternState = create<PatternState>()(
   devtools(
     (set, get) =>
       ({
         difficulty: 0,
-        pattern: [[], [], [], [], []],
         phase: 'awaiting-init',
         zones: [],
+        pattern: [],
         init: (difficulty = 1) => {
           set(
             {
-              //Difficulty dropped by one because nextRound() will increment it.
-              difficulty: Math.max(0, difficulty - 1),
-              pattern: [[], [], [], [], []],
+              difficulty,
             },
             undefined,
             'init',
           );
           get().nextRound();
         },
-        onRevealEnd: (zone_index) => {
-          const { zones, phase } = get();
-          if (phase !== 'revealing') {
-            return;
+        stringify: () => {
+          //By default the the zod parser will strip anything that is not part
+          //of the schema. In this case used to strip the functions from the
+          //state and give safe-to-stringify data.
+          //
+          //It is possible to config Zod to error on superfluous props.
+          const valid = patternStateDataSchema.safeParse(get());
+          if (!valid.data) {
+            throw new Error('Invalid state somehow!');
+          }
+          return JSON.stringify(valid.data, undefined, 2);
+        },
+        onResume: (state) => {
+          const valid = patternStateDataSchema.safeParse(state);
+          //Use zod to validate that the data is valid.
+          //NOTE: This does not validate that the data makes sense in terms
+          //of the game engine. For example if the indices in `pattern` have
+          //been modified it may not match with `zones` any more.
+          //In a prod scenario you would probably need a custom reviving/validator
+          //function to ensure that the data is consistent with expectations.
+          if (!valid.data) {
+            return new Error('Tried to resume with invalid state.');
           }
 
-          const z: ZoneState = { ...zones[zone_index], revealed: false };
-          const next_zones = zones.toSpliced(zone_index, 1, z);
-          const remaining_revealed = next_zones.filter(
+          const { onZoneClick, onRevealEnd } = get();
+          const zones = valid.data.zones.map<ZoneState>((z) => ({
+            ...z,
+            onRevealEnd: () => onRevealEnd(z.index),
+            onClick: () => onZoneClick(z.index),
+          }));
+          set({ ...valid.data, zones });
+        },
+        onRevealEnd: (zoneIdx) => {
+          const { zones } = get();
+          const z: ZoneState = { ...zones[zoneIdx], revealed: false };
+
+          const nextZones = zones.toSpliced(zoneIdx, 1, z);
+          const anyRemainingUnrevealed = nextZones.some(
             ({ revealed }) => revealed,
           );
           set(
             {
-              zones: next_zones,
-              phase:
-                remaining_revealed.length === 0
-                  ? 'awaiting-input'
-                  : 'revealing',
+              zones: nextZones,
+              phase: anyRemainingUnrevealed ? 'revealing' : 'awaiting-input',
             },
             undefined,
-            'onRevealEnd',
+            'onRevealEnd zone:' + zoneIdx,
           );
         },
-        onZoneClick: (zone_index) => {
-          const { zones, phase } = get();
-          if (phase !== 'awaiting-input') {
-            return;
-          }
-          const z = { ...zones[zone_index], picked: true };
+        onZoneClick: (zoneIdx) => {
+          const { zones } = get();
+
+          const z: ZoneState = { ...zones[zoneIdx], picked: true };
+
           if (!z.active) {
-            set(
-              {
-                phase: 'game-over',
-              },
-              undefined,
-              'onZoneClick player failed',
-            );
+            set({ phase: 'game-over' }, undefined, 'onZoneClick failed');
             return;
           }
-          const next_zones = zones.toSpliced(zone_index, 1, z);
-          const has_unpicked_zones = next_zones.some(
+
+          const nextZones = zones.toSpliced(zoneIdx, 1, z);
+          const anyRemainingUnpicked = nextZones.some(
             ({ active, picked }) => active && !picked,
           );
+
           set(
             {
-              zones: next_zones,
-              phase: !has_unpicked_zones ? 'awaiting-next' : phase,
+              phase: anyRemainingUnpicked ? 'awaiting-input' : 'awaiting-next',
+              zones: nextZones,
             },
             undefined,
-            'onZoneClick',
+            'onZoneClick ' + zoneIdx,
           );
         },
         nextRound: () => {
           const { difficulty, onRevealEnd, onZoneClick } = get();
-
-          const next_difficulty = difficulty + 1;
-
-          const active_zone_count = next_difficulty * 2;
-          const dead_zone_count =
-            active_zone_count +
-            getRandomInt(
-              Math.round(active_zone_count / 2),
-              Math.round(active_zone_count * 1.2),
-            );
-
-          const active_indices = getRandomUniqueValuesInRange(
-            0,
-            active_zone_count + dead_zone_count,
-            active_zone_count,
+          const activeZonesCount = difficulty;
+          const inactiveZonesCount = getRandomInt(
+            Math.round(activeZonesCount / 2),
+            activeZonesCount * 2,
           );
 
-          const zones = Array(active_zone_count + dead_zone_count)
+          const activeIndices = getRandomUniqueValuesInRange(
+            0,
+            activeZonesCount + inactiveZonesCount,
+            activeZonesCount,
+          );
+
+          const zones = Array(activeZonesCount + inactiveZonesCount)
             .fill(null)
             .map<ZoneState>((_, i) => {
-              const active = active_indices.includes(i);
+              const active = activeIndices.includes(i);
               return {
-                active,
                 index: i,
-                onClick: () => onZoneClick(i),
                 revealed: active,
-                onAnimationEnd: () => onRevealEnd(i),
+                active,
                 picked: false,
+                onRevealEnd: () => onRevealEnd(i),
+                onClick: () => onZoneClick(i),
               };
             });
           const indices = zones.map(({ index }) => index);
           const columns = 5;
           const pattern = Array(columns)
             .fill(null)
-            .reduce<PatternState['pattern']>(
-              (acc, _, column_index) => {
-                if (column_index === columns - 1) {
-                  acc[column_index] = indices;
-                  return acc;
-                }
-                const idx = getRandomInt(1, indices.length);
-                acc[column_index] = indices.splice(0, idx);
+            .reduce<number[][]>((acc, _, columnIdx) => {
+              if (columnIdx === columns - 1) {
+                acc.push(indices);
                 return acc;
-              },
-              [[], [], [], [], []],
-            );
+              }
+              const countToGrab = getRandomInt(1, indices.length);
+              acc.push(indices.splice(0, countToGrab));
+              return acc;
+            }, []);
           shuffleArray(pattern);
 
           set(
             {
+              phase: 'revealing',
               zones,
               pattern,
-              difficulty: next_difficulty,
-              phase: 'revealing',
+              difficulty: difficulty + 1,
             },
             undefined,
             'nextRound',
           );
         },
       }) as PatternState,
-    {
-      name: 'Eruditio Pattern State',
-    },
+    { name: 'Pattern State' },
   ),
 );
 
