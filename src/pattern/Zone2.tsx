@@ -11,7 +11,7 @@ const Zone: React.FC<ZoneProps> = ({
   picked,
   index,
   onClick,
-  onAnimationEnd,
+  onRevealEnd,
   interactive,
 }) => {
   if (index < 0) {
@@ -29,8 +29,12 @@ const Zone: React.FC<ZoneProps> = ({
         picked && 'bg-green-500 opacity-100 duration-300',
         interactive && 'hover:opacity-100',
       )}
-      onAnimationEnd={onAnimationEnd}
-      onClick={onClick}
+      onAnimationEnd={() => onRevealEnd()}
+      onClick={() => {
+        if (interactive) {
+          onClick();
+        }
+      }}
     />
   );
 };
