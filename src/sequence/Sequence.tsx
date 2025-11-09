@@ -1,10 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import useSequenceState from './useSequenceState';
 import { cn } from '~/lib/utils';
 import { Button } from '~/components/ui/button';
 import { RefreshCcwIcon } from 'lucide-react';
-import { SequenceType } from './sequence_extras';
+import {
+  createSequenceForType,
+  SequenceShapes,
+  SequenceType,
+} from './sequence_extras';
 import SequenceButton from './SequenceButton';
+import SequenceShape from './SequenceShape';
 
 interface SequenceProps {
   type: SequenceType;
@@ -23,9 +28,13 @@ const Sequence: React.FC<SequenceProps> = ({ type }) => {
   const onAnswer = useSequenceState(({ onAnswer }) => onAnswer);
   const initSequence = useSequenceState(({ init }) => init);
 
+  const seq = useMemo(() => {
+    return createSequenceForType(type);
+  }, [type]);
+
   useEffect(() => {
-    initSequence();
-  }, [initSequence]);
+    initSequence(seq);
+  }, [initSequence, seq]);
 
   return (
     <div
@@ -50,7 +59,7 @@ const Sequence: React.FC<SequenceProps> = ({ type }) => {
       >
         <div
           className="border-primary/50 flex cursor-pointer flex-col items-center justify-center gap-4 rounded border p-4"
-          onClick={() => initSequence()}
+          onClick={() => initSequence(seq)}
           onAuxClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -69,40 +78,70 @@ const Sequence: React.FC<SequenceProps> = ({ type }) => {
       <div className="flex grow basis-full justify-center text-8xl">
         <div className="flex flex-col">
           {reveal_index % 2 === 0 && reveal && (
-            <p className="mb-10 min-h-14 animate-ping [animation-duration:_1400ms]">
-              {reveal}
-            </p>
+            <div className="mb-10 min-h-14 min-w-14 animate-ping [animation-duration:_1400ms]">
+              {type === 'shapes' ? (
+                <SequenceShape shape={reveal as SequenceShapes} />
+              ) : (
+                reveal
+              )}
+            </div>
           )}
           {reveal_index % 2 === 1 && reveal && (
-            <p className="mb-10 min-h-14 animate-ping [animation-duration:_1400ms]">
-              {reveal}
-            </p>
+            <div className="mb-10 min-h-14 min-w-14 animate-ping [animation-duration:_1400ms]">
+              {type === 'shapes' ? (
+                <SequenceShape shape={reveal as SequenceShapes} />
+              ) : (
+                reveal
+              )}
+            </div>
           )}
           {phase === 'game-over' && (
             <div className="flex gap-2">
               {sequence.map((v, i) => (
-                <p
+                <div
                   key={i + '-' + v}
-                  className={cn('w-16', sequence.length > 8 && 'w-10 text-6xl')}
+                  className={cn(
+                    'w-16',
+                    sequence.length > 8 && 'w-10 text-6xl',
+                    type === 'shapes' && 'h-16',
+                    type === 'shapes' && sequence.length > 8 && 'h-10',
+                  )}
                 >
-                  {v}
-                </p>
+                  {type === 'shapes' ? (
+                    <SequenceShape shape={v as SequenceShapes} />
+                  ) : (
+                    v
+                  )}
+                </div>
               ))}
             </div>
           )}
 
           <div className="flex min-h-14 gap-2">
             {answers.map((v, i) => (
-              <p
+              <div
                 key={i + '-' + v}
                 className={cn(
                   'w-16 text-teal-600',
                   sequence.length > 8 && 'w-10 text-6xl',
                   phase === 'game-over' && 'last:text-red-700',
+                  type === 'shapes' && 'h-16',
+                  type === 'shapes' && sequence.length > 8 && 'h-10',
                 )}
               >
-                {v}
-              </p>
+                {type === 'shapes' ? (
+                  <SequenceShape
+                    shape={v as SequenceShapes}
+                    className={
+                      phase === 'game-over' && i === answers.length - 1
+                        ? 'bg-red-700'
+                        : 'bg-teal-600'
+                    }
+                  />
+                ) : (
+                  v
+                )}
+              </div>
             ))}
           </div>
         </div>
@@ -115,7 +154,13 @@ const Sequence: React.FC<SequenceProps> = ({ type }) => {
       >
         {values_to_pick_from.map((v) => (
           <SequenceButton
-            value={v}
+            value={
+              type === 'shapes' ? (
+                <SequenceShape shape={v as SequenceShapes} />
+              ) : (
+                v
+              )
+            }
             key={v}
             onClick={phase === 'input' ? () => onAnswer(v) : undefined}
           />

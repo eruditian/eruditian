@@ -6,10 +6,10 @@ export const Route = createFileRoute('/sequence/$type')({
   component: RouteComponent,
 });
 
-const parseType = (sizeParam: string): SequenceType => {
-  return sequence_types.includes(sizeParam as SequenceType)
-    ? (sizeParam as SequenceType)
-    : 'numbers';
+const parseType = (typeParam: string): SequenceType => {
+  return sequence_types.includes(typeParam as SequenceType)
+    ? (typeParam as SequenceType)
+    : 'numeric';
 };
 
 function RouteComponent() {

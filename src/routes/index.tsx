@@ -127,13 +127,43 @@ function Index() {
       <div className="shadow-center border-accent-foreground/30 flex justify-center gap-4 rounded-lg border-2 p-4 shadow-cyan-700/70">
         <Link
           to="/sequence/$type"
-          params={{ type: 'numbers' }}
+          params={{ type: 'numeric' }}
           className={cn(
             'border-primary/70 rounded border p-4',
             !has_active_players && 'opacity-50',
           )}
         >
           123...
+        </Link>
+        <Link
+          to="/sequence/$type"
+          params={{ type: 'alphanumeric' }}
+          className={cn(
+            'border-primary/70 rounded border p-4',
+            !has_active_players && 'opacity-50',
+          )}
+        >
+          1A6...
+        </Link>
+        <Link
+          to="/sequence/$type"
+          params={{ type: 'characters' }}
+          className={cn(
+            'border-primary/70 rounded border p-4',
+            !has_active_players && 'opacity-50',
+          )}
+        >
+          BÄC...
+        </Link>
+        <Link
+          to="/sequence/$type"
+          params={{ type: 'shapes' }}
+          className={cn(
+            'border-primary/70 rounded border p-4',
+            !has_active_players && 'opacity-50',
+          )}
+        >
+          &#9632;&#9679;&#9650;...
         </Link>
         <Link
           to="/pattern"

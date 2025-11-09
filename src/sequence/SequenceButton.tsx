@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { cn } from '~/lib/utils';
 
 interface SequenceButtonProps {
-  value: string;
+  value: string | ReactNode;
   onClick?: () => void;
   className?: string;
 }
