@@ -96,7 +96,7 @@ const Sequence: React.FC<SequenceProps> = ({ type }) => {
               <p
                 key={i + '-' + v}
                 className={cn(
-                  'text-teal-600',
+                  'w-16 text-teal-600',
                   sequence.length > 8 && 'w-10 text-6xl',
                   phase === 'game-over' && 'last:text-red-700',
                 )}
