@@ -18,3 +18,22 @@ export const shuffleArray = <T>(array: T[]): T[] => {
 
   return array;
 };
+
+/** Returns [`column`, `row`] position for a given index in a 2D array of given column count. */
+export const indexTo2DColumnRow = (
+  index: number,
+  column_count: number,
+): [number, number] => {
+  return [index % column_count, index / column_count];
+};
+/** Returns [`row`, `column`] position for a given index in a 2D array of given column count. */
+export const indexTo2DRowColumn = (
+  index: number,
+  column_count: number,
+): [number, number] => {
+  return [index / column_count, index % column_count];
+};
+
+/** Generate random value in range [min,max). */
+export const getRandomInt = (min: number, max: number) =>
+  Math.floor(Math.random() * (max - min)) + min;

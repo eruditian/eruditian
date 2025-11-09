@@ -135,6 +135,15 @@ function Index() {
         >
           123...
         </Link>
+        <Link
+          to="/pattern"
+          className={cn(
+            'border-primary/70 rounded border p-4',
+            !has_active_players && 'opacity-50',
+          )}
+        >
+          Pattern
+        </Link>
       </div>
     </div>
   );
