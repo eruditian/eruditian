@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PatternRouteImport } from './routes/pattern'
+import { Route as GeoRouteImport } from './routes/geo'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SequenceTypeRouteImport } from './routes/sequence.$type'
 import { Route as MemorySizeRouteImport } from './routes/memory.$size'
@@ -17,6 +18,11 @@ import { Route as MemorySizeRouteImport } from './routes/memory.$size'
 const PatternRoute = PatternRouteImport.update({
   id: '/pattern',
   path: '/pattern',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GeoRoute = GeoRouteImport.update({
+  id: '/geo',
+  path: '/geo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,12 +43,14 @@ const MemorySizeRoute = MemorySizeRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/geo': typeof GeoRoute
   '/pattern': typeof PatternRoute
   '/memory/$size': typeof MemorySizeRoute
   '/sequence/$type': typeof SequenceTypeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/geo': typeof GeoRoute
   '/pattern': typeof PatternRoute
   '/memory/$size': typeof MemorySizeRoute
   '/sequence/$type': typeof SequenceTypeRoute
@@ -50,20 +58,28 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/geo': typeof GeoRoute
   '/pattern': typeof PatternRoute
   '/memory/$size': typeof MemorySizeRoute
   '/sequence/$type': typeof SequenceTypeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/pattern' | '/memory/$size' | '/sequence/$type'
+  fullPaths: '/' | '/geo' | '/pattern' | '/memory/$size' | '/sequence/$type'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/pattern' | '/memory/$size' | '/sequence/$type'
-  id: '__root__' | '/' | '/pattern' | '/memory/$size' | '/sequence/$type'
+  to: '/' | '/geo' | '/pattern' | '/memory/$size' | '/sequence/$type'
+  id:
+    | '__root__'
+    | '/'
+    | '/geo'
+    | '/pattern'
+    | '/memory/$size'
+    | '/sequence/$type'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  GeoRoute: typeof GeoRoute
   PatternRoute: typeof PatternRoute
   MemorySizeRoute: typeof MemorySizeRoute
   SequenceTypeRoute: typeof SequenceTypeRoute
@@ -76,6 +92,13 @@ declare module '@tanstack/react-router' {
       path: '/pattern'
       fullPath: '/pattern'
       preLoaderRoute: typeof PatternRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/geo': {
+      id: '/geo'
+      path: '/geo'
+      fullPath: '/geo'
+      preLoaderRoute: typeof GeoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -104,6 +127,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  GeoRoute: GeoRoute,
   PatternRoute: PatternRoute,
   MemorySizeRoute: MemorySizeRoute,
   SequenceTypeRoute: SequenceTypeRoute,
