@@ -1,6 +1,7 @@
 import { create as createZustand } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { PlayerColor } from '~/hooks/usePlayerMeta';
+import { stepTowards, Vec } from '~/emath';
 
 import butterfly_blue from '../assets/catch/butterfly_blue.png';
 import butterfly_cyan from '../assets/catch/butterfly_cyan.png';
@@ -41,23 +42,24 @@ const rocks: Record<'angry' | 'happy', string> = {
 };
 
 export interface Parcel {
-  x: number;
-  y: number;
-  /** The current offset from the original spawn x-location. */
-  x_offset: number;
-  /** Visual scaling. */
+  origin: Vec;
+  /** Current position. */
+  pos: Vec;
+  /** Where it "goes away". */
+  target: Vec;
   rotation: number;
+  /** Visual scaling. */
   scale: number;
   /** Hitbox size. */
   size: number;
   velocity: number;
   image: string;
-  /** Player id who should catch this parcel. If undefined it is dangerous! */
+  /** Player id who should catch this parcel. If undefined it is a dangerous parcel! */
   catchable_by?: string;
 }
 
 type Phase = 'playing' | 'waiting_start' | 'game-over';
-type TouchPoint = {
+export type CatchTouchPoint = {
   x: number;
   y: number;
   index: number;
@@ -70,15 +72,24 @@ interface CatchState {
   net_refs?: [HTMLDivElement, HTMLDivElement, HTMLDivElement, HTMLDivElement];
   init: (
     net_refs: [HTMLDivElement, HTMLDivElement, HTMLDivElement, HTMLDivElement],
-    parcel_refs: HTMLDivElement[],
     // players: ??[],
   ) => void;
-  updateTouch: (points: TouchPoint[]) => void;
+  updateTouch: (points: CatchTouchPoint[]) => void;
+  updateCountdown: (delta_time: number) => void;
   tick: (delta_time: number) => void;
+  /** Function called by itself as part of RequestAnimationFrame. It calls `tick` with frame delta. */
   tickRAF: (t: number) => void;
+  countdown:
+    | {
+        time: number;
+        display: string;
+      }
+    | undefined;
   time: {
+    /** Delta from last frame. */
     delta: number;
-    last_frame: number;
+    /** End of last frame as received from RAF. */
+    last_frame_timestamp: number;
   };
 }
 
@@ -91,41 +102,101 @@ const useCatchState = createZustand<CatchState>()(
         parcel_refs: [],
         time: {
           delta: 0,
-          last_frame: -1,
+          last_frame_timestamp: -1,
         },
-        init: (net_refs, parcel_refs) => {
+        countdown: undefined,
+        init: (net_refs) => {
           set({
             net_refs,
-            parcel_refs,
             phase: 'waiting_start',
           });
         },
         updateTouch: () => {},
+        updateCountdown: (delta) => {
+          const { countdown } = get();
+          if (!countdown) {
+            set(
+              {
+                countdown: {
+                  time: 3000,
+                  display: '3',
+                },
+              },
+              undefined,
+              'tick; countdown init',
+            );
+            return;
+          }
+          const new_time = countdown.time - delta;
+          if (new_time <= 0) {
+            set(
+              {
+                countdown: undefined,
+                phase: 'playing',
+              },
+              undefined,
+              'tick; countdown finished',
+            );
+            return;
+          }
+          const display = Math.ceil(new_time).toString();
+          if (display === countdown.display) {
+            //The value to display has not updated. We can update by reference to save a render.
+            countdown.time = new_time;
+            return;
+          }
+          set(
+            {
+              countdown: {
+                time: new_time,
+                display: display,
+              },
+            },
+            undefined,
+            'tick; countdown update',
+          );
+        },
         tick: (delta) => {
-          const { phase } = get();
+          const { phase, parcels, parcel_refs, updateCountdown } = get();
           if (phase === 'game-over') {
             return;
           }
 
           if (phase === 'waiting_start') {
+            updateCountdown(delta);
+            return;
           }
 
-          requestAnimationFrame(get().tickRAF);
+          const updated = parcels.map((parcel) => ({
+            ...parcel,
+            pos: stepTowards(parcel.pos, parcel.target, parcel.velocity, delta),
+          }));
+          parcel_refs.forEach((ref, i) => {
+            ref.style.top = updated[i].pos.x + '%';
+          });
+
+          set(
+            {
+              parcels: updated,
+            },
+            undefined,
+            'tick',
+          );
         },
         tickRAF: (t) => {
           const { time, tick, tickRAF } = get();
-          if (time.last_frame < 0) {
-            time.last_frame = t;
+          if (time.last_frame_timestamp < 0) {
+            time.last_frame_timestamp = t;
             requestAnimationFrame(tickRAF);
             return;
           }
-          time.delta = t - time.last_frame;
+          time.delta = t - time.last_frame_timestamp;
           tick(time.delta);
           requestAnimationFrame(tickRAF);
         },
       }) as CatchState,
     {
-      name: 'Eruditio Sequence State',
+      name: 'Eruditio Catch State',
     },
   ),
 );
