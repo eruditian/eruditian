@@ -1,7 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import World from './maps/World';
 
 const Geo: React.FC = () => {
-  return <div>Geo component</div>;
+  useEffect(() => {}, []);
+
+  return (
+    <div>
+      <World />
+    </div>
+  );
 };
 
 export default Geo;

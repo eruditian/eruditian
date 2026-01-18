@@ -1,6 +1,6 @@
 import { CountryCode } from './countries';
 
-//Paths from https://github.com/StephanWagner/svgMap/blob/master/src/js/svgMap.js
+//Paths from https://github.com/stephanwagner/svgMap/blob/master/src/js/core/svg-map.js#L821
 const country_paths: Record<CountryCode, string> = {
   AD: 'M985.4,301.7l0.2-0.4l-0.2-0.2l-0.7-0.2l-0.3-0.1l-0.4,0.3l-0.1,0.3l0.1,0.1v0.4l0.1,0.2h0.4L985.4,301.7 L985.4,301.7z',
   AE: 'M1283.9,408.6l-1.3-2.2l-3,3.9l-3.7,4.1l-3.3,4.3l-3.3-0.2l-4.6-0.2l-4.2,1l-0.3-1.7l-1,0.3l0.4,1.5l2.6,6.4 l16.8,3.2l1-1.3l-0.1-2.6l1.4-2.6l-0.3-2.6l2.4-1.3l-1.1-0.8l0.1-4.2h2.8L1283.9,408.6L1283.9,408.6z',
