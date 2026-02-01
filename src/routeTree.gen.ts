@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PatternRouteImport } from './routes/pattern'
+import { Route as MathRouteImport } from './routes/math'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SequenceTypeRouteImport } from './routes/sequence.$type'
 import { Route as MemorySizeRouteImport } from './routes/memory.$size'
@@ -17,6 +18,11 @@ import { Route as MemorySizeRouteImport } from './routes/memory.$size'
 const PatternRoute = PatternRouteImport.update({
   id: '/pattern',
   path: '/pattern',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MathRoute = MathRouteImport.update({
+  id: '/math',
+  path: '/math',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,12 +43,14 @@ const MemorySizeRoute = MemorySizeRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/math': typeof MathRoute
   '/pattern': typeof PatternRoute
   '/memory/$size': typeof MemorySizeRoute
   '/sequence/$type': typeof SequenceTypeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/math': typeof MathRoute
   '/pattern': typeof PatternRoute
   '/memory/$size': typeof MemorySizeRoute
   '/sequence/$type': typeof SequenceTypeRoute
@@ -50,20 +58,28 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/math': typeof MathRoute
   '/pattern': typeof PatternRoute
   '/memory/$size': typeof MemorySizeRoute
   '/sequence/$type': typeof SequenceTypeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/pattern' | '/memory/$size' | '/sequence/$type'
+  fullPaths: '/' | '/math' | '/pattern' | '/memory/$size' | '/sequence/$type'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/pattern' | '/memory/$size' | '/sequence/$type'
-  id: '__root__' | '/' | '/pattern' | '/memory/$size' | '/sequence/$type'
+  to: '/' | '/math' | '/pattern' | '/memory/$size' | '/sequence/$type'
+  id:
+    | '__root__'
+    | '/'
+    | '/math'
+    | '/pattern'
+    | '/memory/$size'
+    | '/sequence/$type'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  MathRoute: typeof MathRoute
   PatternRoute: typeof PatternRoute
   MemorySizeRoute: typeof MemorySizeRoute
   SequenceTypeRoute: typeof SequenceTypeRoute
@@ -76,6 +92,13 @@ declare module '@tanstack/react-router' {
       path: '/pattern'
       fullPath: '/pattern'
       preLoaderRoute: typeof PatternRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/math': {
+      id: '/math'
+      path: '/math'
+      fullPath: '/math'
+      preLoaderRoute: typeof MathRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -104,6 +127,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  MathRoute: MathRoute,
   PatternRoute: PatternRoute,
   MemorySizeRoute: MemorySizeRoute,
   SequenceTypeRoute: SequenceTypeRoute,
