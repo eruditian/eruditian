@@ -10,73 +10,119 @@ interface DragData {
   delta: Vec;
 }
 
-const registerDragListener = (
+interface DragEvent {
+  type: 'drag';
+  data: DragData;
+}
+interface DragEndEvent {
+  type: 'drag-end';
+}
+interface ZoomOutEvent {
+  type: 'zoom-out';
+  delta: number;
+}
+interface ZoomInEvent {
+  type: 'zoom-in';
+  delta: number;
+}
+
+type GestureListenerEvent =
+  | DragEndEvent
+  | DragEvent
+  | ZoomOutEvent
+  | ZoomInEvent;
+
+const registerGestureListener = (
   el: HTMLDivElement,
-  onDragCb: (data: DragData) => void,
-  onDragEndCB: () => void,
+  onEventCb: (ev: GestureListenerEvent) => void,
 ) => {
   let origin: Vec | undefined = undefined;
   let initialTouchId: number | undefined = undefined;
-  let bbox: DOMRect = el.getBoundingClientRect();
+
+  const coverer = document.createElement('div');
+  coverer.style.width = '100%';
+  coverer.style.height = '100%';
+  coverer.style.background = 'rgba(100,0,0,0.2)';
+  coverer.style.position = 'absolute';
+  coverer.style.top = '0';
+  coverer.style.left = '0';
 
   const mouseMoveListener = (ev: MouseEvent) => {
     ev.preventDefault();
     if (!origin) {
       return;
     }
-    if (
-      bbox.left <= ev.clientX &&
-      bbox.right >= ev.clientX &&
-      bbox.top <= ev.clientY &&
-      bbox.bottom >= ev.clientY
-    ) {
-      //Mouse inside bbox.
-      onDragCb({
+
+    onEventCb({
+      type: 'drag',
+      data: {
         delta: {
           x: origin.x - ev.clientX,
           y: origin.y - ev.clientY,
         },
         origin,
-      });
-      return;
-    }
-    console.log('going outside');
-    onDragEndCB();
-    el.removeEventListener('mousemove', mouseMoveListener);
-    origin = undefined;
+      },
+    });
   };
+  const mouseUpListener = (ev: MouseEvent) => {
+    ev.preventDefault();
+    origin = undefined;
+    document.body.removeChild(coverer);
+    onEventCb({
+      type: 'drag-end',
+    });
+  };
+
+  coverer.addEventListener('mousemove', mouseMoveListener);
+  coverer.addEventListener('mouseleave', mouseUpListener);
+  coverer.addEventListener('mouseup', mouseUpListener);
+  coverer.addEventListener('click', (ev) => ev.preventDefault());
+  coverer.addEventListener('mousedown', (ev) => ev.preventDefault());
+
   const mouseDownListener = (ev: MouseEvent) => {
     ev.preventDefault();
+    if (origin) {
+      return;
+    }
     origin = { x: ev.clientX, y: ev.clientY };
     initialTouchId = undefined;
-    bbox = el.getBoundingClientRect();
-
-    el.addEventListener('mousemove', mouseMoveListener);
+    document.body.append(coverer);
   };
   el.addEventListener('mousedown', mouseDownListener);
-  const mouseLeaveListener = (ev: MouseEvent) => {
+
+  const wheelListener = (ev: WheelEvent) => {
     ev.preventDefault();
-    if (origin) {
-      onDragEndCB();
+
+    const delta = Math.abs(ev.deltaY);
+    if (delta > 0.5) {
+      onEventCb({
+        type: ev.deltaY > 0 ? 'zoom-in' : 'zoom-out',
+        delta: delta,
+      });
     }
-    el.removeEventListener('mousemove', mouseMoveListener);
-    origin = undefined;
   };
-  el.addEventListener('mouseleave', mouseLeaveListener);
+  el.addEventListener('wheel', wheelListener);
+
+  ////
+  ////
+  ////
 
   const touchStartListener = (ev: TouchEvent) => {
     ev.preventDefault();
+    if (origin) {
+      return;
+    }
     const touch = ev.targetTouches[0];
     origin = { x: touch.clientX, y: touch.clientX };
     initialTouchId = touch.identifier;
-    bbox = el.getBoundingClientRect();
   };
   el.addEventListener('touchstart', touchStartListener);
   const abortTouchListener = (ev: TouchEvent) => {
     ev.preventDefault();
-    onDragEndCB();
+    onEventCb({ type: 'drag-end' });
     origin = undefined;
     initialTouchId = undefined;
+    coverer.remove();
   };
   el.addEventListener('touchcancel', abortTouchListener);
   const touchMove = (ev: TouchEvent) => {
@@ -87,28 +133,32 @@ const registerDragListener = (
       origin
     ) {
       const touch = ev.targetTouches[0];
-      onDragCb({
-        delta: {
-          x: origin.x - touch.clientX,
-          y: origin.y - touch.clientY,
+      onEventCb({
+        type: 'drag',
+        data: {
+          delta: {
+            x: origin.x - touch.clientX,
+            y: origin.y - touch.clientY,
+          },
+          origin,
         },
-        origin,
       });
       return;
     }
-    onDragEndCB();
+    onEventCb({ type: 'drag-end' });
     origin = undefined;
     initialTouchId = undefined;
+    coverer.remove();
   };
   el.addEventListener('touchmove', touchMove);
 
   return () => {
     el.removeEventListener('mousedown', mouseDownListener);
+    el.removeEventListener('wheel', wheelListener);
     el.removeEventListener('touchstart', touchStartListener);
     el.removeEventListener('touchcancel', abortTouchListener);
     el.removeEventListener('touchmove', touchMove);
-    el.removeEventListener('mousemove', mouseMoveListener);
-    el.removeEventListener('mouseleave', mouseLeaveListener);
+    coverer.remove();
   };
 };
 
@@ -117,10 +167,8 @@ const MathA: React.FC = () => {
 
   useEffect(() => {
     if (line_cont_el.current) {
-      registerDragListener(
-        line_cont_el.current,
-        (d) => console.log('d', d),
-        () => console.log('DragEnd'),
+      return registerGestureListener(line_cont_el.current, (d) =>
+        console.log('d', d),
       );
     }
   }, []);
