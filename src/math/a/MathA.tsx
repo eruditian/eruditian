@@ -180,8 +180,13 @@ const MathA: React.FC = () => {
         className="relative flex basis-1/3 items-center justify-between bg-emerald-300 transition-all duration-500"
         ref={line_cont_el}
       >
+        <div
+          style={{ transform: 'translateX(500px)' }}
+          className="absolute h-10 w-0.5 bg-black/80 transition-all"
+        />
         <div className="h-10 w-0.5 bg-black/80 transition-all" />
         <div className="h-10 w-0.5 bg-black/80 transition-all" />
+        <div className="h-10 w-0.5 bg-blue-600/80 transition-all" />
         <div className="h-10 w-0.5 bg-black/80 transition-all" />
         <div className="h-10 w-0.5 bg-black/80 transition-all" />
         <div className="h-10 w-0.5 bg-black/80 transition-all" />
