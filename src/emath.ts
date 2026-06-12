@@ -37,3 +37,28 @@ export const indexTo2DRowColumn = (
 /** Generate random value in range [min,max). */
 export const getRandomInt = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min)) + min;
+
+/** Generate count number of unique values in range [min,max). */
+export const getRandomUniqueValuesInRange = (
+  min: number,
+  max: number,
+  count: number,
+): number[] => {
+  if (count > max - min) {
+    throw new Error(
+      'Requested more unique values than available in given range.',
+    );
+  }
+  const available = Array(max - min)
+    .fill(null)
+    .map((_, i) => min + i);
+  const uniques = Array(count)
+    .fill(null)
+    .reduce((acc) => {
+      const idx = getRandomInt(0, available.length);
+      acc.push(available[idx]);
+      available.splice(idx, 1);
+      return acc;
+    }, [] as number[]);
+  return uniques;
+};

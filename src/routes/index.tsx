@@ -174,6 +174,15 @@ function Index() {
         >
           Pattern
         </Link>
+        <Link
+          to="/mathpuzzle"
+          className={cn(
+            'border-primary/70 rounded border p-4',
+            !has_active_players && 'opacity-50',
+          )}
+        >
+          Math Puzzle
+        </Link>
       </div>
     </div>
   );
